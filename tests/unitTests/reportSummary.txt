@@ -1,0 +1,9 @@
+RUNIT TEST PROTOCOL -- Wed Mar 30 14:54:56 2016 
+*********************************************** 
+Number of test functions: 14 
+Number of errors: 0 
+Number of failures: 0 
+
+ 
+1 Test Suite : 
+flowFP unit testing - 14 test functions, 0 errors, 0 failures

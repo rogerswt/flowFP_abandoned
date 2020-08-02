@@ -1,0 +1,39 @@
+RUNIT TEST PROTOCOL -- Wed Mar 30 14:54:56 2016 
+*********************************************** 
+Number of test functions: 14 
+Number of errors: 0 
+Number of failures: 0 
+
+ 
+1 Test Suite : 
+flowFP unit testing - 14 test functions, 0 errors, 0 failures
+
+
+
+Details 
+*************************** 
+Test Suite: flowFP unit testing 
+Test function regexp: ^test.+ 
+Test file regexp: ^runit.+\.[rR]$ 
+Involved directory: 
+/Users/rogers/git/R/packages/flowFP/tests/unitTests 
+--------------------------- 
+Test file: /Users/rogers/git/R/packages/flowFP/tests/unitTests/runit.flowFP.R 
+test.fingerprint1: (2 checks) ... OK (1.39 seconds)
+test.FP2: (8 checks) ... OK (0.51 seconds)
+test.Reducing_model_nRecursions: (2 checks) ... OK (0.96 seconds)
+test.Reducing_nRecursions: (5 checks) ... OK (0.76 seconds)
+--------------------------- 
+Test file: /Users/rogers/git/R/packages/flowFP/tests/unitTests/runit.flowFPModel.R 
+test.BadParams: (2 checks) ... OK (0.49 seconds)
+test.CheckAutoLevel: (3 checks) ... OK (0.68 seconds)
+test.ModelAccessors: (5 checks) ... OK (0.46 seconds)
+test.ModelConstruction: (2 checks) ... OK (0.75 seconds)
+test.NonFlowData: (1 checks) ... OK (0 seconds)
+--------------------------- 
+Test file: /Users/rogers/git/R/packages/flowFP/tests/unitTests/runit.flowFPPlex.R 
+test.plex_append: (3 checks) ... OK (0.81 seconds)
+test.plex_append_plex: (5 checks) ... OK (0.8 seconds)
+test.plex_testClasses: (2 checks) ... OK (0.8 seconds)
+test.plex1: (2 checks) ... OK (0.9 seconds)
+test.plex2: (2 checks) ... OK (0.87 seconds)
