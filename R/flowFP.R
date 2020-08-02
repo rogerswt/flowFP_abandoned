@@ -4,7 +4,7 @@
 ## Author: Herb Holyst
 ##
 ##  Copyright (C) 2009 by University of Pennsylvania,
-##  Philadelphia, PA USA. All rights reserved. 
+##  Philadelphia, PA USA. All rights reserved.
 ##
 
 ## =========================================================================
@@ -20,7 +20,7 @@ flowFP <- function(fcs, model=NULL, sampleClasses=NULL, ...) {
 
 
     fp = as(model, "flowFP")
-    
+
     fp@tags = list();
     numFeatures = 2^fp@.cRecursions
 
@@ -34,10 +34,10 @@ flowFP <- function(fcs, model=NULL, sampleClasses=NULL, ...) {
         	fp@tags[[i]] = tag_events(fcs[[i]]@exprs, model)
         	fp@counts[i,] = count_events(fp@tags[[i]], numFeatures)
         }
-        
+
         if (!is.null(sampleClasses)) {
 			sampleClasses(fp) <- sampleClasses
-		}	
+		}
 	} else {
 		if(model@dequantize) {
 			fcs = dequantize(fcs)
@@ -59,7 +59,7 @@ is.flowFP <-function(obj) {
 ## =========================================================================
 ## flowFP - Helper Functions...
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-tag_events <- function(fcs_events, model) 
+tag_events <- function(fcs_events, model)
 {
     tags = vector(mode="integer", length=nrow(fcs_events))
 
@@ -68,8 +68,10 @@ tag_events <- function(fcs_events, model)
 
     tags[] = as.integer(1)
     for(i in 1:model@nRecursions) {
-        .Call("tag_events", fcs_events, i, model@split_axis[[i]], 
+      suppressWarnings(
+        .Call("tag_events", fcs_events, i, model@split_axis[[i]],
               model@split_val[[i]], tags)
+      )
     }
     return(tags)
 }
@@ -79,7 +81,9 @@ tag_events <- function(fcs_events, model)
 ##
 count_events <- function(tags, numFeatures) {
     counts = vector(mode="integer", length=numFeatures)
-    .Call("count_events", counts, tags)
+    suppressWarnings(
+      .Call("count_events", counts, tags)
+    )
     return (counts)
 }
 
@@ -106,10 +110,10 @@ getFPCounts <- function(object, transformation=c("raw", "normalized", "log2norm"
 	}
 	if (transformation == "raw")
 		return (counts)
-		
+
 	expected_counts = sapply(object@tags, length) / nFeatures(object)
 	counts = counts / expected_counts
-	
+
 	if (transformation == "normalized")
 		return (counts)
 	else
