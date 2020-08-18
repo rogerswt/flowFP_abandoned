@@ -1,8 +1,22 @@
+CHANGES IN VERSION 1.45.0
+-------------------------
+
+1) The update to R4.0.2 caused warnings like:
+    Warning messages:
+    1: In .Call("bin_level", fcs@exprs, model@.tmp_tags, model@split_axis[[level]],  :
+      converting NULL pointer to R NULL.
+
+  The c code was updated to avoid returning a null pointer.
+
+2) Updated citation syntax was incorporated in the CITATION file.
+
+
+
 CHANGES IN VERSION 1.10.0
 -------------------------
 
 1) We now require that length of sampleClasses be the same as the number of
-instances in the flowFP object.  The documentation indicated that, but 
+instances in the flowFP object.  The documentation indicated that, but
 the code didn't enforce it.
 
 2) Fixed a bug regarding setting sampleClasses for a flowFPPlex.  It erroneously assigned classes to only the first member of the plex.
