@@ -5,9 +5,9 @@
  * R package to preform rectangular probability binning on
  * multi-dimensional FCS list mode data.
  *
- * 
+ *
  * Terms:
- *   parameter – Column in the data-set matrix. corresponds to 
+ *   parameter – Column in the data-set matrix. corresponds to
  *               a detector in the flow cytometer.
  *   bin       – a subset of the events.
  *   bin model – is a set of parameters, and median values used
@@ -16,13 +16,13 @@
  *               vector contains all of the split axis and values.
  *               The len of each vector is 2^level. (2,4,8,16...)
  *
- * Create a bin model - 
+ * Create a bin model -
  *  Goal is to create a model for a data-set where we divide up
  *  the multi-dimensional space such that each region (bin) has
  *  an equal probability of containing events. In the simplest
  *  case if we had one dimensional data, we could calculate the
  *  median, and divide the set into roughly two even sections.
- *  With multi-dimensional data we first need to decide which 
+ *  With multi-dimensional data we first need to decide which
  *  parameter (axis) to split on. We split on the parameter with
  *  the largest variance. Each time we split a parent bin into
  *  it's two child bins, we record the split value and parameter
@@ -41,7 +41,7 @@
  *  four, etc. We keep track of which events belong to each bin in the
  *  tags vector as described above.
  */
- 
+
 #include "flowFP.h"
 
 /*-----------------------------------------------------------------
@@ -60,26 +60,27 @@
                  during the binning process.
 ------------------------------------------------------------------*/
 
-SEXP bin_level(SEXP _data, SEXP _tags, SEXP _split_axis, SEXP _split_val, 
+SEXP bin_level(SEXP _data, SEXP _tags, SEXP _split_axis, SEXP _split_val,
                SEXP _level, SEXP _param_idx)
-{ 
+{
 
 	CMATRIX fcs;
 	CIVECTOR tags, split_axis, param_idx;
 	CVECTOR split_val;
+	SEXP retval = PROTECT(allocVector(NILSXP, 1));
 
 	Rmatrix2C(_data, &fcs);
 	Rvector2C(_split_val, &split_val);
-	
+
 	Rivector2C(_tags, &tags);
 	Rivector2C(_split_axis, &split_axis);
 	Rivector2C(_param_idx, &param_idx);
 
 	int level = INTEGER_VALUE(_level);
 	int num_splits = (int)(0x1) << (level - 1);
-	
+
 	CIVECTOR **event_idx_lut = create_idx_lut(&tags, num_splits);
-	
+
 	int i;
 	int bin_number = 1;
 	for(i=0; i < num_splits; i++) {
@@ -90,9 +91,11 @@ SEXP bin_level(SEXP _data, SEXP _tags, SEXP _split_axis, SEXP _split_val,
 		split_bin(&fcs, &tags, event_idx_lut[i], split_axis.data[i], split_val.data[i], bin_number);
 		bin_number += 2;
 	}
-		
+
 	destroy_idx_lut(event_idx_lut, num_splits);
-	return(NULL);
+
+	UNPROTECT(1);
+	return(retval);
 }
 
 /*-----------------------------------------------------------------
@@ -114,15 +117,16 @@ SEXP tag_events(SEXP _fcs, SEXP _level, SEXP _split_axis, SEXP _split_val, SEXP 
 	int level = INTEGER_VALUE(_level);
 	CIVECTOR split_axis, tags;
 	CVECTOR split_val;
-	
+	SEXP retval = PROTECT(allocVector(NILSXP, 1));
+
 	Rmatrix2C(_fcs, &fcs);
 	Rivector2C(_split_axis, &split_axis);
 	Rvector2C(_split_val, &split_val);
 	Rivector2C(_tags, &tags);
 	int num_splits = (int)(0x1) << (level - 1);
-	
+
 	CIVECTOR **event_idx_lut = create_idx_lut(&tags, num_splits);
-		
+
 	int i;
 	int bin_number = 1;
 	for(i=0; i < num_splits; i++) {
@@ -132,9 +136,11 @@ SEXP tag_events(SEXP _fcs, SEXP _level, SEXP _split_axis, SEXP _split_val, SEXP 
 		split_bin(&fcs, &tags, event_idx_lut[i], split_axis.data[i], split_val.data[i], bin_number);
 		bin_number += 2;
 	}
-		
+
 	destroy_idx_lut(event_idx_lut, num_splits);
-	return (NULL);
+
+	UNPROTECT(1);
+	return (retval);
 }
 
 /*-----------------------------------------------------------------
@@ -149,21 +155,24 @@ SEXP tag_events(SEXP _fcs, SEXP _level, SEXP _split_axis, SEXP _split_val, SEXP 
 
 SEXP count_events(SEXP _cnts, SEXP _tags) {
 
+  SEXP retval = PROTECT(allocVector(NILSXP, 1));
+
 	CIVECTOR cnts, tags;
 	Rivector2C(_cnts, &cnts);
 	Rivector2C(_tags, &tags);
 	int i;
 	for(i=0; i < cnts.len; i++)
 		cnts.data[i] = 0;
-		
+
 	for(i=0; i < tags.len; i++) {
 		if (tags.data[i] < 1 || tags.data[i] > cnts.len)
 			error("The tags data is out of range for this model, stopped at tag[%d] = %d (range 1 to %d)\n", i, tags.data[i], cnts.len);
-			
+
 		cnts.data[tags.data[i] - 1]++;
 	}
-	
-	return(NULL);
+
+	UNPROTECT(1);
+	return(retval);
 }
 
 /*
@@ -194,7 +203,7 @@ void Rmatrix2C(SEXP rmatrix, CMATRIX *cmatrix) {
  *  as a pointer to a int and a length.
  */
 void Rivector2C(SEXP rivect, CIVECTOR *civect) {
-		
+
 	if (!isInteger(rivect))
 		error("Invalid argument 'rivect': must be a vector of ints");
 
@@ -211,7 +220,7 @@ void Rivector2C(SEXP rivect, CIVECTOR *civect) {
  *  as a pointer to a double and a length.
  */
 void Rvector2C(SEXP rvect, CVECTOR *cvect) {
-		
+
 	if (!isReal(rvect))
 		error("Invalid argument 'rvect': must be a vector of Reals");
 	if(LENGTH(rvect) <= 0)

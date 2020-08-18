@@ -61,17 +61,15 @@ is.flowFP <-function(obj) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 tag_events <- function(fcs_events, model)
 {
-    tags = vector(mode="integer", length=nrow(fcs_events))
+    tags = vector(mode = "integer", length = nrow(fcs_events))
 
     if (nrow(fcs_events) == 0)
-        return (tags)
+        return(tags)
 
     tags[] = as.integer(1)
-    for(i in 1:model@nRecursions) {
-      suppressWarnings(
-        .Call("tag_events", fcs_events, i, model@split_axis[[i]],
+    for (i in 1:model@nRecursions) {
+      .Call("tag_events", fcs_events, i, model@split_axis[[i]],
               model@split_val[[i]], tags)
-      )
     }
     return(tags)
 }
@@ -80,11 +78,10 @@ tag_events <- function(fcs_events, model)
 ## it allocates memory to hold the results of the counting.
 ##
 count_events <- function(tags, numFeatures) {
-    counts = vector(mode="integer", length=numFeatures)
-    suppressWarnings(
-      .Call("count_events", counts, tags)
-    )
-    return (counts)
+    counts = vector(mode = "integer", length = numFeatures)
+    .Call("count_events", counts, tags)
+
+    return(counts)
 }
 
 ## This private function should only be called by the method 'counts',

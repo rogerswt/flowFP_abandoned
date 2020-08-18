@@ -108,17 +108,16 @@ is.flowFPModel <-function(obj) {
 ## equal 2^nRecursions.
 bin_level <- function(fcs, model, level) {
   # number of bins at this level
-  num_splits = as.integer(2**(level -1))
-  model@split_val[[level]] = vector(mode="numeric", length=num_splits)
-  model@split_axis[[level]] = vector(mode="integer", length=num_splits)
+  num_splits = as.integer(2**(level - 1))
+  model@split_val[[level]] = vector(mode = "numeric", length = num_splits)
+  model@split_axis[[level]] = vector(mode = "integer", length = num_splits)
 
-  param_idx = parameters(model, index=TRUE)
+  param_idx = parameters(model, index = TRUE)
 
-  suppressWarnings(
-    .Call("bin_level", fcs@exprs, model@.tmp_tags, model@split_axis[[level]],
+  .Call("bin_level", fcs@exprs, model@.tmp_tags, model@split_axis[[level]],
         model@split_val[[level]], level, param_idx)
-  )
-  return (model)
+
+  return(model)
 }
 
 ##
@@ -126,7 +125,7 @@ bin_level <- function(fcs, model, level) {
 ##
 ## This function is a book-keeping nightmare... It figures out in multi-dimensional
 ## space the bin boundaries of each bin in a model.
-createBinBoundaries <-function(model, fcs) {
+createBinBoundaries <- function(model, fcs) {
 
 	nRecursions = model@.cRecursions
 	numfeatures = 2^nRecursions
